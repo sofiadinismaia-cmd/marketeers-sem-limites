@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Marketeers Sem Limites</title>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#00a14b;--bg2:#007a37;--card:#fff;--ink:#06301a;--mute:#4d6b59;--accent:#00a14b;--hi:#e4ff4f;--line:#d5e8dc;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#007a37;--bg2:#005a28}}
+:root[data-theme="dark"]{--bg:#007a37;--bg2:#005a28}
+*{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px);height:100%}
+body{margin:0;min-height:100%;background:var(--bg);background:linear-gradient(var(--bg),var(--bg2));background-attachment:fixed;color:#fff;font:16px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif}
+main{max-width:520px;margin:0 auto;padding:30px 20px 40px}
+h1,.big{font-family:"Bricolage Grotesque",system-ui,sans-serif}
+h1{font-size:2.9rem;line-height:.98;margin:0 0 12px;font-weight:800;letter-spacing:-.02em}
+h1 span{color:var(--hi)}
+.by{display:inline-block;background:var(--hi);color:var(--ink);font-weight:700;font-size:.9rem;padding:5px 12px;border-radius:99px;margin-bottom:18px}
+.sub{margin:0 0 22px;opacity:.95}
+.chal{background:var(--card);color:var(--ink);border-radius:26px;padding:26px 22px;min-height:230px;display:flex;flex-direction:column;justify-content:center;gap:14px;box-shadow:0 8px 0 var(--bg2)}
+.kind{align-self:flex-start;background:var(--bg);color:#fff;font-weight:700;font-size:.85rem;padding:3px 12px;border-radius:99px}
+.big{font-size:1.6rem;line-height:1.2;font-weight:800;margin:0}
+.chal.spin .big{opacity:.5}
+.empty .big{color:var(--mute);font-size:1.3rem;font-weight:600}
+button{font:inherit;font-weight:800;border:0;border-radius:16px;padding:16px 18px;cursor:pointer;width:100%;background:var(--hi);color:var(--ink);box-shadow:0 5px 0 rgba(0,0,0,.25);transition:transform .08s,box-shadow .08s}
+button:active{transform:translateY(4px);box-shadow:0 1px 0 rgba(0,0,0,.25)}
+button:focus-visible{outline:3px solid #fff;outline-offset:3px}
+button:disabled{opacity:.6}
+button.alt{background:transparent;color:#fff;border:2px solid #fff;box-shadow:none}
+.row{display:flex;flex-direction:column;gap:14px;margin-top:22px}
+.hide{display:none}
+.stats{margin-top:18px;font-size:.95rem;opacity:.95;text-align:center}
+.link{background:none;box-shadow:none;color:#fff;width:auto;font-weight:500;text-decoration:underline;padding:4px;opacity:.85}
+footer{margin-top:28px;text-align:center;font-size:.85rem;opacity:.9}
+
+.up{margin-top:30px;background:var(--card);color:var(--ink);border-radius:26px;padding:22px;text-align:center;box-shadow:0 8px 0 var(--bg2)}
+.up h2{font-family:"Bricolage Grotesque",system-ui,sans-serif;font-size:1.4rem;margin:0 0 6px}
+.up p{margin:0 0 14px;color:var(--mute)}
+#qr{display:inline-block;background:#fff;padding:6px;border-radius:12px;line-height:0}
+#qr svg{width:210px;height:210px;max-width:100%}
+.up a{color:var(--ink);font-weight:700;word-break:break-all}
+</style>
+</head>
+<body>
+<main>
+  <span class="by">Organizado pelo Núcleo de Marketing da UPP</span>
+  <h1>Marketeers <span>Sem Limites</span></h1>
+  <p class="sub">Sorteia um desafio, cumpre-o durante a noite e regista-o em foto ou vídeo.</p>
+
+  <div id="chal" class="chal empty">
+    <span class="kind hide" id="kind"></span>
+    <p class="big" id="texto">Carrega no botão para receber o teu primeiro desafio.</p>
+  </div>
+
+  <div class="row">
+    <button id="sortear">Sortear desafio</button>
+    <button id="feito" class="alt hide">Desafio cumprido</button>
+  </div>
+  <p class="stats" id="stats"></p>
+  <p class="stats"><button class="link" id="reset">Recomeçar</button></p>
+  <section class="up">
+    <h2>Envia as tuas fotos e vídeos</h2>
+    <p>No fim de cada desafio, lê o QR code e carrega o que registaste.</p>
+    <div id="qr"></div>
+    <p id="uplink" style="margin:12px 0 0"></p>
+  </section>
+  <footer>Núcleo de Marketing da UPP · Marketeers Sem Limites</footer>
+</main>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
+<script>
+const UPLOAD_URL="https://drive.google.com/drive/folders/1ixOKM3Fw1kt2W3sN8jZpATVklW3CHDfr?usp=drive_link";
+(function(){
+ const q=document.getElementById("qr"),l=document.getElementById("uplink");
+ if(!UPLOAD_URL||typeof qrcode==="undefined"){q.style.display="none";l.textContent="O QR code ficará disponível em breve.";return}
+ const c=qrcode(0,"M");c.addData(UPLOAD_URL);c.make();
+ q.innerHTML=c.createSvgTag({cellSize:6,margin:0,scalable:true});
+ l.innerHTML='<a href="'+UPLOAD_URL+'" target="_blank" rel="noopener">Abrir pasta de envio</a>';
+})();
+</script>
+<script>
+const D=[
+["Social · Foto", "Foto com alguém que nunca tinhas visto na vida."],
+["Social · Foto", "Selfie com 5 pessoas de turmas diferentes."],
+["Social · Foto", "Foto com alguém do mesmo signo que tu."],
+["Social · Foto", "Foto a brindar com 3 pessoas que acabaste de conhecer."],
+["Social · Foto", "Foto da pessoa mais bem vestida da noite (pede autorização)."],
+["Social · Foto", "Selfie com alguém nascido na mesma cidade que tu."],
+["Social · Vídeo", "Vídeo de 10 segundos: alguém dá um conselho ao teu eu do futuro."],
+["Social · Foto", "Foto às cavalitas com um amigo."],
+["Social · Foto", "Foto de duas pessoas a trocar de pose uma com a outra."],
+["Social · Foto", "Foto com alguém que te faça rir logo."],
+["Social · Vídeo", "Vídeo: 3 pessoas resumem o curso numa só palavra."],
+["Social · Foto", "Foto de 4 pessoas a fazer o mesmo gesto ao mesmo tempo."],
+["Social · Foto", "Foto de uma dança improvisada em roda."],
+["Social · Foto", "Selfie com alguém de outro curso da UPP."],
+["Social · Foto", "Foto com a pessoa que mais te ajudou este ano."],
+["Social · Vídeo", "Vídeo: alguém conta uma curiosidade que ninguém sabe sobre si."],
+["Social · Foto", "Foto com alguém de traje académico completo."],
+["Social · Foto", "Foto de um abraço de grupo com pelo menos 6 pessoas."],
+["Social · Vídeo", "Vídeo a cantar o refrão de uma música com desconhecidos."],
+["Social · Foto", "Selfie com a pessoa que tem o nome mais comprido que encontrares."],
+["Social · Foto", "Selfie com alguém que te mostre o emblema mais antigo da sua capa."],
+["Social · Foto", "Foto de um aperto de mão secreto inventado na hora."],
+["Social · Foto", "Foto de 3 pessoas a fingir que são a capa de uma série."],
+["Social · Vídeo", "Vídeo: 3 pessoas dizem a comida favorita sem hesitar."],
+["Social · Foto", "Foto a imitar a pose de uma estátua com um amigo."],
+["Social · Foto", "Selfie com alguém que faça anos no mesmo mês que tu."],
+["Social · Foto", "Foto a oferecer uma bebida a alguém e a brindar."],
+["Social · Vídeo", "Vídeo: 3 pessoas dizem uma coisa que aprenderam no curso."],
+["Social · Vídeo", "Vídeo: um veterano dá um conselho a um caloiro."],
+["Social · Foto", "Selfie com um professor."],
+["Social · Vídeo", "Vídeo: alguém que fale 3 línguas diz \"boa noite\" em cada uma."],
+["Social · Foto", "Foto de um momento de karaoke improvisado."],
+["Social · Vídeo", "Vídeo: alguém conta a melhor memória da Queima das Fitas."],
+["Social · Foto", "Foto de caloiros e veteranos juntos."],
+["Social · Vídeo", "Vídeo: agradece a alguém por algo específico."],
+["Social · Vídeo", "Vídeo: alguém conta uma tradição da vida académica da UPP."],
+["Social · Foto", "Selfie com alguém que traga a pasta, a fita ou a capa do curso."],
+["Social · Foto", "Foto de um high five em cadeia com 5 pessoas."],
+["Social · Vídeo", "Vídeo: desafia alguém para um duelo de dança de 10 segundos."],
+["Social · Foto", "Foto final: todos juntos, pelo menos 10 pessoas."],
+["Marketing · Foto", "Foto de uma marca que veja no espaço e vídeo com o slogan que inventares para ela."],
+["Marketing · Vídeo", "Vídeo: desenha o emblema do Núcleo de Marketing e explica o que simboliza."],
+["Marketing · Vídeo", "Vídeo: anúncio de 15 segundos a um objeto da tua mala."],
+["Marketing · Foto", "Foto de um emblema de marca ou curso na roupa de alguém."],
+["Marketing · Vídeo", "Vídeo: cria o emblema da tua turma e apresenta-o em 15 segundos."],
+["Marketing · Vídeo", "Vídeo: jingle de 10 segundos para a UPP."],
+["Marketing · Foto", "Foto do emblema mais original que encontrares."],
+["Marketing · Vídeo", "Vídeo: unboxing dramático de uma bebida."],
+["Marketing · Foto", "Foto a recriar um anúncio famoso."],
+["Marketing · Foto", "Foto de grupo no formato de cartaz publicitário."],
+["Marketing · Vídeo", "Vídeo: entrevista a alguém sobre a sua marca favorita."],
+["Marketing · Foto", "Foto a fingir que és influencer a promover o teu copo."],
+["Marketing · Vídeo", "Vídeo: pitch do curso em 15 segundos."],
+["Marketing · Foto", "Foto do brasão ou emblema da UPP."],
+["Marketing · Foto", "Foto do melhor \"call to action\" que encontrares (uma placa ou cartaz)."],
+["Marketing · Vídeo", "Vídeo: reação de 3 pessoas ao nome de uma marca (primeira palavra que lhes vem à cabeça)."],
+["Marketing · Foto", "Foto de um QR code que encontres."],
+["Marketing · Vídeo", "Vídeo: rebranding de uma pessoa, com antes e depois."],
+["Marketing · Foto", "Foto do cartaz com pior design que encontrares."],
+["Marketing · Vídeo", "Vídeo: cria uma hashtag para a noite e faz 3 pessoas a dizê-la em coro."],
+["Marketing · Vídeo", "Vídeo: mascote improvisada com objetos que tenhas à mão."],
+["Marketing · Foto", "Foto de um emblema improvisado por ti com objetos à mão."],
+["Marketing · Vídeo", "Vídeo: descreve o cliente ideal de um produto à tua escolha."],
+["Marketing · Foto", "Foto de um anúncio de rua que te tenha chamado a atenção."],
+["Marketing · Vídeo", "Vídeo: pede a um professor para dizer o slogan do curso."],
+["Marketing · Vídeo", "Vídeo: recria um anúncio para a Queima das Fitas ou para a semana académica."],
+["Marketing · Vídeo", "Vídeo: vende o teu sapato num anúncio de 15 segundos."],
+["Marketing · Foto", "Foto de grupo como capa de revista de marketing."],
+["Marketing · Vídeo", "Vídeo: \"intervalo publicitário\" de 10 segundos com banda sonora à escolha."],
+["Marketing · Foto", "Foto com o logótipo do Núcleo de Marketing ou um objeto da noite."],
+["Social · Foto", "Foto da pessoa mais bem vestida da noite (pede autorização)."],
+["Social · Foto", "Foto às cavalitas com um amigo."],
+["Social · Foto", "Foto de duas pessoas a trocar de pose uma com a outra."],
+["Social · Foto", "Foto de uma dança improvisada em roda."],
+["Social · Foto", "Foto de um abraço de grupo com pelo menos 6 pessoas."],
+["Social · Foto", "Foto a imitar a pose de uma estátua com um amigo."],
+["Social · Foto", "Foto de um high five em cadeia com 5 pessoas."],
+["Social · Vídeo", "Vídeo: desafia alguém para um duelo de dança de 10 segundos."],
+["Marketing · Vídeo", "Vídeo: rebranding de uma pessoa, com antes e depois."]
+];
+const $=id=>document.getElementById(id);
+const K="msl-v5";
+function rd(){try{return JSON.parse(localStorage.getItem(K))||{}}catch(e){return {}}}
+function wr(s){try{localStorage.setItem(K,JSON.stringify(s))}catch(e){}}
+let st=Object.assign({usados:[],atual:null,feitos:0},rd());
+
+function render(){
+ const tem=st.atual!==null;
+ $("chal").classList.toggle("empty",!tem);
+ $("kind").classList.toggle("hide",!tem);
+ if(tem){$("kind").textContent=D[st.atual][0];$("texto").textContent=D[st.atual][1]}
+ $("feito").classList.toggle("hide",!tem);
+ $("sortear").textContent=tem?"Outro desafio":"Sortear desafio";
+ $("stats").textContent=st.feitos?("Desafios cumpridos: "+st.feitos):"";
+}
+
+function sortear(){
+ let livres=D.map((_,i)=>i).filter(i=>!st.usados.includes(i));
+ if(!livres.length){st.usados=[];livres=D.map((_,i)=>i)}
+ if(st.atual!==null&&livres.length>1)livres=livres.filter(i=>i!==st.atual);
+ const esc=livres[Math.floor(Math.random()*livres.length)];
+ $("sortear").disabled=true;
+ $("chal").classList.remove("empty");$("chal").classList.add("spin");
+ $("kind").classList.add("hide");
+ let t=0;
+ const iv=setInterval(()=>{
+  $("texto").textContent=D[Math.floor(Math.random()*D.length)][1];
+  if(++t>10){
+   clearInterval(iv);
+   $("chal").classList.remove("spin");
+   st.atual=esc;st.usados.push(esc);wr(st);
+   $("sortear").disabled=false;render();
+  }
+ },90);
+}
+
+$("sortear").onclick=sortear;
+$("feito").onclick=()=>{st.feitos++;st.atual=null;wr(st);render()};
+$("reset").onclick=()=>{st={usados:[],atual:null,feitos:0};wr(st);$("texto").textContent="Carrega no botão para receber o teu primeiro desafio.";render()};
+render();
+</script>
+</body>
+</html>
